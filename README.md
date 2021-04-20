@@ -4,26 +4,16 @@
 
 Please install the editorconfig plugin, so we use the same settings   
 
-## Configure Unity for Git
-
-*[Instructions taken from here](https://thoughtbot.com/blog/how-to-git-with-unity)*  
-* Make the .meta files visible to avoid broken object references:
-  * Go to *Edit > Project Settings > Editor*
-  * In *Version Control*, select *Mode: "Visible Meta Files"*
-* Use plain text serialization to avoid unresolvable merge conflicts
-  * In *Asset Serialization*, select *Mode: "Force Text"*
-Save your changes using *File > Save Project*  
-
 ## File structure
 
-- Separate the Assets file depending on what they are.  
+- Separate the Assets file into folders, depending on what they are  
 - File naming practices:  # Try to not use underscores (_), whitespaces, hyphens (-) unless it belongs to the word  
   - Capitalize the folder names and use plural when possible.  
   - For all Unity files and scripts, use UpperCamelCase / PascalCase (ex: *LevelGenerator.cs*, *MyAwesomeScene.unity*, *Player.prefab*)  
   - For raw resources that are not scripts (and not Unity related), please use lowerCamelCase (ex: *playerRunning.png*, *deathRequiem.mp3*, *pillStats.json*)  
 
 Example with a standard tree structure (this is but an example, though the comments are useful):  
-```
+```  
 - Scenes
   - Levels
     - Level01.unity
@@ -49,5 +39,82 @@ Example with a standard tree structure (this is but an example, though the comme
     - willhelmScream.mp3
 - Prefabs
 - Tiles
+```  
+
+## Coding patterns
+
+*Now this part is something we never properly implement, but I want to try to create less buggy games using it*  
+I will talk about some design patterns regarding architecture. If you're not too confident about the topic and feel it's is too complicated for now, Don't concern yourself about it  
+
+### State
+
+Our code easily become a mess because we don't do states (or not enough).  
+
+#### The problem
+
+We want to avoid using "if" conditions for complex objects behavior changes; example with a character that has to jump:  
 ```
+void Player::handleInput(Input input) {
+  if (input == PRESS_B) {
+    if (!isJumping) {
+      isJumping = true
+      ...
+    }
+  }
+}
+```  
+We want to avoid the above code. It looks fine as it is, but it will become messy once we need to:  
+- implement a double jump
+- implement a crouch system
+- use animations
+- have attacks that can be triggered on the ground or in the air
+- ...
+Instead we will use states!  
+
+#### The switch state
+
+The basic way to avoid this is to use a state with switch case. This will prevent our code from becoming convoluted early on.  
+```
+enum State {
+  STANDING,
+  JUMPING
+}
+
+void Player::handleInput(Input input) {
+  switch (state) {
+    case State.STANDING:
+      if (input === PRESS_B) {
+        state = State.JUMPING
+        ...
+      }
+      break;
+    case State.JUMPING:
+      break;
+  }
+}
+
+void Player::update(float deltaTime) {
+  switch (state) {
+    case State.JUMPING:
+      jumpTime += deltaTime
+      ...
+      break;
+  }
+}
+  
+```
+No "if hell" using this. Doesn't matter if you use switch or if for the state, but prefer switch if you have many states.  
+
+*[Source](https://www.gameprogrammingpatterns.com/state.html)*
+
+## Configure Unity for Git
+
+* Make the .meta files visible to avoid broken object references:
+  * Go to *Edit > Project Settings > Editor*
+  * In *Version Control*, select *Mode: "Visible Meta Files"*
+* Use plain text serialization to avoid unresolvable merge conflicts
+  * In *Asset Serialization*, select *Mode: "Force Text"*
+Save your changes using *File > Save Project*  
+
+*[Source](https://thoughtbot.com/blog/how-to-git-with-unity)*  
 
