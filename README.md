@@ -42,6 +42,13 @@ Example with a standard tree structure (this is but an example, though the comme
 - Tiles
 ```  
 
+## Unity practices
+
+### Serialized fields
+
+You might want to serialize fields to be able to edit them in the editor.  
+If you do so, please don't initiate the value within the code. It's always confusing to have 2 sources of truth in this case, when you could have only one.  
+
 ## Coding patterns
 
 Our code tends to become messy. We should try to use some robust patterns to avoid bugs  
