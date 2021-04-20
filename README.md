@@ -11,6 +11,7 @@ Please install the editorconfig plugin, so we use the same settings
   - Capitalize the folder names and use plural when possible.  
   - For all Unity files and scripts, use UpperCamelCase / PascalCase (ex: *LevelGenerator.cs*, *MyAwesomeScene.unity*, *Player.prefab*)  
   - For raw resources that are not scripts (and not Unity related), please use lowerCamelCase (ex: *playerRunning.png*, *deathRequiem.mp3*, *pillStats.json*)  
+  - For scripts and ScriptableObject: **always** name your file with the class name. You *will* get a bug if you name a "thingObject.cs" file for a "ThingObject" class.  
 
 Example with a standard tree structure (this is but an example, though the comments are useful):  
 ```  
@@ -43,12 +44,11 @@ Example with a standard tree structure (this is but an example, though the comme
 
 ## Coding patterns
 
-*Now this part is something we never properly implement, but I want to try to create less buggy games using it*  
-I will talk about some design patterns regarding architecture. If you're not too confident about the topic and feel it's is too complicated for now, Don't concern yourself about it  
+Our code tends to become messy. We should try to use some robust patterns to avoid bugs  
 
 ### State
 
-Our code easily become a mess because we don't do states (or not enough).  
+Our code easily become convoluted because we don't do states (or not enough).  
 
 #### The problem
 
@@ -73,7 +73,7 @@ Instead we will use states!
 
 #### The switch state
 
-The basic way to avoid this is to use a state with switch case. This will prevent our code from becoming convoluted early on.  
+The basic way to avoid this is to use a state with switch case.  
 ```
 enum State {
   STANDING,
